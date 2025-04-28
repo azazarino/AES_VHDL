@@ -3,22 +3,17 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.aes.all;
 
-entity aes_vhdl is 
+entity addroundkey is 
 	port (
 		state_in : in std_logic_vector(127 downto 0); 
+		round_key : in std_logic_vector(127 downto 0);
 		state_out : out std_logic_vector(127 downto 0)
 		);
-end aes_vhdl;
+end addroundkey;
 
-architecture rtl of aes_vhdl is 
+architecture rtl of addroundkey is 
 begin 
-	keyexpansion_inst : entity work.keyexpansion
-		port map (
-			key_in  => key,
-         round_keys => round_key
-      );
 	
-	
-	
+	state_out <= state_in xor round_key;
 	
 end rtl;
