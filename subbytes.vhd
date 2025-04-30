@@ -3,14 +3,14 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.aes.all;
 
-entity sub_bytes is 
+entity subbytes is 
 	port (
 		state_in : in std_logic_vector(127 downto 0); 
 		state_out : out std_logic_vector(127 downto 0)
 		);
-end sub_bytes;
+end subbytes;
 
-architecture rtl of sub_bytes is 
+architecture rtl of subbytes is 
 
 signal substitution : std_logic_vector(127 downto 0);
 
