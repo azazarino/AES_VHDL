@@ -84,7 +84,7 @@ begin
 	);
 	
 	
-	create_rounds : for i in 1 to 9 generate
+	create_rounds : for i in 1 to 8 generate
 	
 	SBX: subbytes
       port map (
@@ -113,6 +113,31 @@ begin
 	end generate;
 	
 	--last round
+	SBX: subbytes
+      port map (
+         state_in  => state_intermediate(8),
+         state_out => sb(9)
+      );
+
+   SRX: shiftrows
+      port map (
+			state_in  => sb(9),
+         state_out => sr(9)
+      );
+
+   MCX: mixcolumns
+      port map (
+         state_in  => sr(9),
+         state_out => mc(9)
+      );
+
+	ARKX: addroundkey
+		port map (
+			state_in  => mc(9),
+         round_key => roundkey_array(9),
+         state_out => state_intermediate(9)
+      ); 
+		
 		
 	SB10: subbytes
 		port map (
