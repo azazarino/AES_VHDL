@@ -5,9 +5,9 @@ use work.aes.all;
 
 entity addroundkey is 
 	port (
-		state_in : in std_logic_vector(127 downto 0); 
-		round_key : in std_logic_vector(127 downto 0);
-		state_out : out std_logic_vector(127 downto 0)
+			state_in : in std_logic_vector(127 downto 0); 
+			round_key : in std_logic_vector(127 downto 0);
+			state_out : out std_logic_vector(127 downto 0)
 		);
 end addroundkey;
 
