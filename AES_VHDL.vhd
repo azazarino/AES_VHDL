@@ -5,9 +5,11 @@ use work.aes.all;
 
 entity aes_vhdl is 
 	port (
-			state_in : in std_logic_vector(127 downto 0);
-			key_in_port : in std_logic_vector(127 downto 0);
-			state_out : out std_logic_vector(127 downto 0)	
+        --clk       : in  std_logic;
+        --reset     : in  std_logic;
+        key       : in  std_logic_vector(127 downto 0);
+        plaintext : in  std_logic_vector(127 downto 0);
+        ciphertext: out std_logic_vector(127 downto 0)
 		);
 end aes_vhdl;
 
@@ -19,48 +21,44 @@ architecture rtl of aes_vhdl is
 			round_keys : out std_logic_vector(1407 downto 0)
 		);
 	end component;
-	component subbytes
-		 port (
-			  state_in  : in  std_logic_vector(127 downto 0);
-			  state_out : out std_logic_vector(127 downto 0)
-		 );
-	end component;
-
-	component shiftrows
-		 port (
-			  state_in  : in  std_logic_vector(127 downto 0);
-			  state_out : out std_logic_vector(127 downto 0)
-		 );
-	end component;
-
-	component mixcolumns
-		 port (
-			  state_in  : in  std_logic_vector(127 downto 0);
-			  state_out : out std_logic_vector(127 downto 0)
-		 );
-	end component;
 
 	component addroundkey
-		 port (
-			  state_in  : in  std_logic_vector(127 downto 0);
-			  round_key : in  std_logic_vector(127 downto 0);
-			  state_out : out std_logic_vector(127 downto 0)
-		 );
+		port (
+			state_in : in std_logic_vector(127 downto 0); 
+			round_key : in std_logic_vector(127 downto 0);
+			state_out : out std_logic_vector(127 downto 0)
+		);
+		end component;
+	
+	component AES_round
+	port (
+		state_in  : in  std_logic_vector(127 downto 0);
+      round_key : in  std_logic_vector(127 downto 0);
+		state_out : out std_logic_vector(127 downto 0)
+	);
 	end component;
 	
+	component AES_lastround
+		port (
+			state_in  : in  std_logic_vector(127 downto 0);
+			round_key : in  std_logic_vector(127 downto 0);
+			state_out : out std_logic_vector(127 downto 0)
+		);
+	end component;
 	
 	type state_array is array (0 to 10) of std_logic_vector(127 downto 0);
-	signal state_intermediate : state_array;
 	signal roundkeys          : std_logic_vector(1407 downto 0);
 	signal roundkey_array     : state_array;
-	signal sb           	 	  : state_array;
-   signal sr                 : state_array;
-   signal mc                 : state_array;
+	signal state				  : state_array;
+	
+	signal state_reg, state_next : std_logic_vector(127 downto 0);
+   --signal round : integer range 0 to 10 := 0;
+	
 	
 begin 
 	
 	keyexpansion_inst : keyexpansion port map(
-		key_in => key_in_port, 
+		key_in => key, 
 		round_keys => roundkeys
 	);
 	
@@ -78,87 +76,27 @@ begin
 
 	
 	add_first_round : addroundkey port map(
-		state_in => state_in, 
+		state_in => plaintext, 
 		round_key => roundkey_array(0), 
-		state_out => state_intermediate(0)
+		state_out => state(0)
 	);
 	
+	create_rounds : for i in 1 to 9 generate
 	
-	create_rounds : for i in 1 to 8 generate
-	
-	SBX: subbytes
-      port map (
-         state_in  => state_intermediate(i-1),
-         state_out => sb(i)
-      );
-
-   SRX: shiftrows
-      port map (
-			state_in  => sb(i),
-         state_out => sr(i)
-      );
-
-   MCX: mixcolumns
-      port map (
-         state_in  => sr(i),
-         state_out => mc(i)
-      );
-
-	ARKX: addroundkey
-		port map (
-			state_in  => mc(i),
-         round_key => roundkey_array(i),
-         state_out => state_intermediate(i)
-      ); 
+	roundX : AES_round port map(
+			state_in  => state(i -1),
+			round_key => roundkey_array(i),
+			state_out => state(i)
+		);
 	end generate;
 	
-	--last round
-	SBX: subbytes
-      port map (
-         state_in  => state_intermediate(8),
-         state_out => sb(9)
-      );
-
-   SRX: shiftrows
-      port map (
-			state_in  => sb(9),
-         state_out => sr(9)
-      );
-
-   MCX: mixcolumns
-      port map (
-         state_in  => sr(9),
-         state_out => mc(9)
-      );
-
-	ARKX: addroundkey
-		port map (
-			state_in  => mc(9),
-         round_key => roundkey_array(9),
-         state_out => state_intermediate(9)
-      ); 
-		
-		
-	SB10: subbytes
-		port map (
-			state_in  => state_intermediate(9),
-         state_out => sb(10)
-			);
-
-   SR10: shiftrows
-      port map (
-         state_in  => sb(10),
-         state_out => sr(10)
-      );
-
-   ARK10: addroundkey
-       port map (
-          state_in  => sr(10),
-          round_key => roundkey_array(10),
-          state_out => state_intermediate(10)
-       );
-		
+	round_last : AES_lastround
+		port map(
+			state_in  => state(9),
+			round_key => roundkey_array(10),
+			state_out => state(10)
+		);
 	
-	state_out <= state_intermediate(10);
+	ciphertext <= state_reg;
 	
 end rtl;
