@@ -13,12 +13,12 @@ begin
 	
 	simulation : process
 	begin 
-		plaintext <= x"6BC1BEE22E409F96E93D7E117393172A";
-		key <= x"2B7E151628AED2A6ABF7158809CF4F3C";
+		plaintext <= x"3243f6a8885a308d313198a2e0370734";
+		key <= 		 x"2b7e151628aed2a6abf7158809cf4f3c";
 	
-		wait for 100 us;
+		wait for 100 ns;
 	
-		if result = x"3AD77BB40D7A3660A89ECAF32466EF97" then
+		if result = x"3925841d02dc09fbdc118597196a0b32" then
 			report "AES encryption success" severity note;
 		else 
 			report "AES encryption failed" severity error;
@@ -29,11 +29,9 @@ begin
 	
 	dut : entity work.aes_vhdl
 		port map(
-			state_in => plaintext,
-			key_in_port => key,
-			state_out => result
+			plaintext => plaintext,
+			key => key,
+			ciphertext => result
 		);
-	
-	--assert state_out = 
 		
 end architecture test;

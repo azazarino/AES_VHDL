@@ -1,12 +1,10 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use work.aes.all;
+
 
 entity aes_vhdl is 
 	port (
-        --clk       : in  std_logic;
-        --reset     : in  std_logic;
         key       : in  std_logic_vector(127 downto 0);
         plaintext : in  std_logic_vector(127 downto 0);
         ciphertext: out std_logic_vector(127 downto 0)
@@ -51,10 +49,6 @@ architecture rtl of aes_vhdl is
 	signal roundkey_array     : state_array;
 	signal state				  : state_array;
 	
-	signal state_reg, state_next : std_logic_vector(127 downto 0);
-   --signal round : integer range 0 to 10 := 0;
-	
-	
 begin 
 	
 	keyexpansion_inst : keyexpansion port map(
@@ -97,6 +91,6 @@ begin
 			state_out => state(10)
 		);
 	
-	ciphertext <= state_reg;
+	ciphertext <= state(10);
 	
 end rtl;
