@@ -54,12 +54,9 @@ begin
     return t1 xor t2 xor b;       -- 8b + 4b + b = 13b
 end function;
 
-
-
 type state_array is array (0 to 15) of std_logic_vector(7 downto 0);
-signal s_in : state_array; 
-signal s_out : state_array;
-
+	signal s_in : state_array; 
+	signal s_out : state_array;
 
 begin 
 

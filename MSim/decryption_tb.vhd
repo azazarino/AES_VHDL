@@ -2,18 +2,18 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL; 
 
-entity encryption_tb is
-end encryption_tb;
+entity decryption_tb is
+end decryption_tb;
 
-architecture tb of encryption_tb is
+architecture tb of decryption_tb is
     -- Component under test
-    component aes_vhdl
+    component decryption_aes
         port (
             clk           	: in  std_logic;
             rstn       	  	: in  std_logic;
             key        	  	: in  std_logic_vector(127 downto 0);
-            plaintext     	: in  std_logic_vector(127 downto 0);
-            ciphertext    	: out std_logic_vector(127 downto 0);
+				ciphertext    	: in std_logic_vector(127 downto 0);
+            plaintext     	: out  std_logic_vector(127 downto 0);
 				done_port 		: out std_logic
         );
     end component;
@@ -31,13 +31,13 @@ architecture tb of encryption_tb is
 
 begin
 
-    dut: aes_vhdl
+    dut: decryption_aes
         port map (
             clk        => clk,
             rstn       => rstn,
             key        => key,
+				ciphertext => ciphertext,
             plaintext  => plaintext,
-            ciphertext => ciphertext,
 				done_port => done_port
         );
 
@@ -58,13 +58,13 @@ begin
         -- Reset the system
         rstn <= '0';
         key <= x"2b7e151628aed2a6abf7158809cf4f3c";  -- Example AES key
-        plaintext <= x"6BC1BEE22E409F96E93D7E117393172A"; -- Example ciphertext
+        ciphertext <= x"3AD77BB40D7A3660A89ECAF32466EF97"; -- Example plaintext
         wait for 2 * CLK_PERIOD;
 
         -- De-assert reset
         rstn <= '1';
 		  wait for 260 ns;
-        if ciphertext = x"3AD77BB40D7A3660A89ECAF32466EF97" then
+        if plaintext = x"6BC1BEE22E409F96E93D7E117393172A" then
 			report "AES encryption success" severity note;
 			else 
 			report "AES encryption failed" severity error;
