@@ -7,8 +7,8 @@ entity aes_vhdl is
 	port (
 		  clk 		: in	std_logic;
 		  rstn      : in 	std_logic;
-        key       : in  std_logic_vector(127 downto 0);
-        plaintext : in  std_logic_vector(127 downto 0);
+        --key       : in  std_logic_vector(127 downto 0);
+        --plaintext : in  std_logic_vector(127 downto 0);
         ciphertext: out std_logic_vector(127 downto 0);
 		  done_port : out std_logic
 		);
@@ -76,6 +76,9 @@ architecture rtl of aes_vhdl is
 	signal round_counter  	  : integer range 0 to 11 := 0;
 	signal selected_round_key : std_logic_vector(127 downto 0);
 	signal done 				  : std_logic;	
+	
+	signal key       : std_logic_vector(127 downto 0) := x"2b7e151628aed2a6abf7158809cf4f3c";
+   signal plaintext : std_logic_vector(127 downto 0) := x"6BC1BEE22E409F96E93D7E117393172A";
 
 begin 
 	
