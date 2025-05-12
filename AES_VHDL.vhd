@@ -149,6 +149,6 @@ begin
         );
 
 	feedback <= s_shift when round_counter = 10 else s_mix;
-	ciphertext <= add_key when round_counter = 11;
+	ciphertext <= add_key when round_counter = 11 else (others => '0');
 	done_port <= '1' when round_counter = 11;
 end rtl;
