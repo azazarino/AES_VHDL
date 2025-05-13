@@ -146,6 +146,6 @@ begin
 
 	
 	feedback <= s_shift;
-	plaintext <= add_key when round_counter = 11;
+	plaintext <= add_key when round_counter = 11 else (others => '0');
 	done_port <= '1' when round_counter = 11 else '0';
 end rtl;

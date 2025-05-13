@@ -1,5 +1,6 @@
 *
-
+!output_files
+!AES_VHDL.*
 !.gitignore
 !*.vhd
 !MSim
